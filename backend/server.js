@@ -2,7 +2,8 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require("cors");
+// const cors = require("cors");
+const path = require('path');
 
 // Configure App:
 const app = express();
@@ -11,7 +12,8 @@ const port = process.env.PORT || 5000;
 // Set Middlewares:
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use(cors());
+// app.use(cors());
+app.use(express.static(path.join(__dirname, '../frontend', 'build')));
 
 
 
@@ -38,7 +40,7 @@ const Card = mongoose.model('Card', cardSchema);
 
 // Handle 'GET' requests made on the '/' route:
 app.get('/', (req, res) => {
-  res.status(200).json({Connection: "Succesfully Established !"})
+  res.sendFile(path.join(__dirname, '../frontend', 'build', 'index.html'));
 });
 
 // Handle 'GET' requests made on the '/api/cards' route to get all the cards:

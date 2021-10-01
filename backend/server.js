@@ -2,6 +2,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require("cors");
 
 // Configure App:
 const app = express();
@@ -10,6 +11,7 @@ const port = process.env.PORT || 5000;
 // Set Middlewares:
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(cors());
 
 
 
@@ -17,13 +19,15 @@ app.use(express.urlencoded({extended: true}));
 mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.m5s9h.mongodb.net/tinderDB?retryWrites=true&w=majority`);
 
 mongoose.connection.once('open', () => {
-  console.log(`Connected to Mongo Atlas Database`);
+  console.log(`Server is connected to Mongo Atlas Database`);
 })
 
 // Create a new collection to store the cards:
 const cardSchema = new mongoose.Schema ({
 	name: String,
 	imgUrl: String
+},{
+  timestamps: true
 })
 
 const Card = mongoose.model('Card', cardSchema);
@@ -32,7 +36,7 @@ const Card = mongoose.model('Card', cardSchema);
 
 // Set API endpoints:
 
-// Handle 'GET' requests made on the '/' route (In future projects, this may serve the client's optimized production build):
+// Handle 'GET' requests made on the '/' route:
 app.get('/', (req, res) => {
   res.status(200).json({Connection: "Succesfully Established !"})
 });
@@ -53,7 +57,7 @@ app.post('/api/card/add', (req, res) => {
   const card = new Card(req.body);
   card.save(err => {
     if(!err) {
-      res.status(201).redirect('/api/cards');
+      res.status(201);
     } else {
       res.status(500).json({"error": err});
     }
@@ -76,5 +80,5 @@ app.delete('/api/card/delete', (req, res) => {
 
 // Set listener:
 app.listen(port, () => {
-  console.log(`Server started on port ${port}`);
+  console.log(`Server started running on port ${port}`);
 })

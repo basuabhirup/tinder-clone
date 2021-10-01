@@ -1,18 +1,22 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect } from 'react'
+import axios from "axios"
 import TinderCard from 'react-tinder-card'
 import "./Cards.css"
 
 function Cards() {
-  const [people, setPeople] = useState([
-    {
-      name: "Elon Musk",
-      url: "https://www.esquireme.com/public/images/2019/12/08/elon-musk.jpg"
-    },
-    {
-      name: "Jeff Bezos",
-      url: "https://techcentral.co.za/wp-content/uploads/2017/05/jeff-bezos-2156-1120.jpg"
-    }
-  ])
+  const [people, setPeople] = useState([]);
+
+  useEffect(() => {
+    axios.get("/api/cards")
+        .then((res) => {
+            if(res.data.length > 0 ) {
+                setPeople([...res.data]);
+            } else {
+                setPeople([]);
+            }  
+        })
+        .catch((err) => console.error(err));
+  }, [])
 
   const swiped = (direction, nameToDelete) => {
     console.log('removing: ' + nameToDelete)
@@ -34,7 +38,7 @@ function Cards() {
             onCardLeftScreen={() => outOfFrame(person.name)}
           >
             <div 
-              style={{ backgroundImage: `url(${person.url})` }} 
+              style={{ backgroundImage: `url(${person.imgUrl})` }} 
               className='card'
             >
               <h3>{person.name}</h3>
